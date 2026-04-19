@@ -1,0 +1,582 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .yt-root {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 520px;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-accent {
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,0,0,0.06);
+    top: -80px; right: -80px;
+    pointer-events: none;
+  }
+  .bg-accent2 {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,0,0,0.04);
+    bottom: 20px; left: -60px;
+    pointer-events: none;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .yt-icon {
+    width: 32px; height: 32px;
+    background: #FF0000;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .yt-icon svg { width: 18px; height: 18px; fill: white; }
+
+  .header-text h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    letter-spacing: -0.3px;
+  }
+  .header-text p {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+  }
+
+  .url-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .url-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .url-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .url-input {
+    flex: 1;
+    height: 42px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 0 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--color-text-primary);
+    background: var(--color-background-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .url-input:focus {
+    border-color: #FF0000;
+    box-shadow: 0 0 0 3px rgba(255,0,0,0.08);
+  }
+  .url-input::placeholder { color: var(--color-text-tertiary); font-family: 'DM Sans', sans-serif; }
+
+  .fetch-btn {
+    height: 42px;
+    padding: 0 18px;
+    background: #FF0000;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .fetch-btn:hover { background: #cc0000; }
+  .fetch-btn:active { transform: scale(0.98); }
+  .fetch-btn:disabled { background: var(--color-border-tertiary); color: var(--color-text-secondary); cursor: not-allowed; transform: none; }
+
+  .video-meta {
+    display: none;
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 1.25rem;
+    align-items: center;
+    gap: 14px;
+  }
+  .video-meta.visible { display: flex; }
+
+  .thumb-wrap {
+    width: 72px; height: 48px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--color-border-tertiary);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: #FF000015;
+  }
+
+  .video-info { flex: 1; min-width: 0; }
+  .video-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+  .video-sub {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    display: flex; gap: 10px;
+  }
+
+  .options-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .option-group label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+  .select-wrap select {
+    width: 100%;
+    height: 38px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 0 32px 0 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--color-text-primary);
+    background: var(--color-background-primary);
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+  }
+  .select-wrap select:disabled {
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+  }
+  .select-wrap select:focus {
+    border-color: #FF0000;
+    box-shadow: 0 0 0 3px rgba(255,0,0,0.08);
+  }
+  .select-chevron {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+  }
+
+  .res-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .res-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 0.5px solid var(--color-border-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    background: var(--color-background-primary);
+    transition: all 0.12s;
+    font-family: 'DM Mono', monospace;
+  }
+  .res-pill:hover {
+    border-color: #FF0000;
+    color: #FF0000;
+  }
+  .res-pill.active {
+    background: #FF0000;
+    border-color: #FF0000;
+    color: white;
+  }
+  .res-pill:disabled, .res-pill.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .format-pills {
+    display: flex;
+    gap: 6px;
+  }
+  .fmt-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 0.5px solid var(--color-border-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    background: var(--color-background-primary);
+    transition: all 0.12s;
+  }
+  .fmt-pill:hover { border-color: #FF0000; color: #FF0000; }
+  .fmt-pill.active { background: #FF0000; border-color: #FF0000; color: white; }
+
+  .progress-section {
+    display: none;
+    margin-bottom: 1.25rem;
+  }
+  .progress-section.visible { display: block; }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-status {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+  .progress-pct {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    color: var(--color-text-primary);
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--color-border-tertiary);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #FF0000;
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .download-btn {
+    width: 100%;
+    height: 46px;
+    background: #FF0000;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: -0.1px;
+  }
+  .download-btn:hover { background: #cc0000; }
+  .download-btn:active { transform: scale(0.99); }
+  .download-btn:disabled {
+    background: var(--color-background-secondary);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .status-bar {
+    margin-top: 10px;
+    min-height: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+  .status-bar.error { color: #E24B4A; }
+  .status-bar.success { color: #3B6D11; }
+
+  .divider {
+    height: 0.5px;
+    background: var(--color-border-tertiary);
+    margin: 1.25rem 0;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .spinner.dark {
+    border: 2px solid rgba(0,0,0,0.15);
+    border-top-color: var(--color-text-secondary);
+  }
+  .spinning { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .copy-code-hint {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-top: 1rem;
+  }
+  .copy-code-hint strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+</style>
+
+<div class="yt-root">
+  <div class="bg-accent"></div>
+  <div class="bg-accent2"></div>
+
+  <div class="header">
+    <div class="yt-icon">
+      <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.5 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
+    </div>
+    <div class="header-text">
+      <h1>YouTube Downloader</h1>
+      <p>Paste a URL, pick quality, download</p>
+    </div>
+  </div>
+
+  <div class="url-section">
+    <div class="url-label">Video URL</div>
+    <div class="url-row">
+      <input class="url-input" id="urlInput" type="text" placeholder="https://youtube.com/watch?v=..." />
+      <button class="fetch-btn" id="fetchBtn" onclick="handleFetch()">
+        <div class="spinner" id="fetchSpinner"></div>
+        <span id="fetchBtnText">Fetch</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="video-meta" id="videoMeta">
+    <div class="thumb-wrap">
+      <img id="thumbImg" src="" alt="" style="display:none;" />
+      <div class="thumb-placeholder" id="thumbPlaceholder">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.5 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
+      </div>
+    </div>
+    <div class="video-info">
+      <div class="video-title" id="videoTitle">Loading...</div>
+      <div class="video-sub">
+        <span id="videoDuration">--</span>
+        <span id="videoChannel">--</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="resSection" style="display:none;">
+    <div class="divider"></div>
+    <div class="section-label">Resolution</div>
+    <div class="res-pills" id="resPills"></div>
+
+    <div style="margin-top: 1rem;">
+      <div class="section-label">Format</div>
+      <div class="format-pills">
+        <div class="fmt-pill active" onclick="selectFormat('mp4', this)">MP4</div>
+        <div class="fmt-pill" onclick="selectFormat('mkv', this)">MKV</div>
+        <div class="fmt-pill" onclick="selectFormat('webm', this)">WebM</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="progress-section" id="progressSection">
+      <div class="progress-header">
+        <span class="progress-status" id="progressStatus">Downloading...</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <button class="download-btn" id="downloadBtn" onclick="handleDownload()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <div class="spinner" id="dlSpinner"></div>
+      <span id="dlBtnText">Download Video</span>
+    </button>
+    <div class="status-bar" id="statusBar"></div>
+  </div>
+
+  <div id="hintBox" class="copy-code-hint">
+    <strong>How to use:</strong> Copy the Python script below into your Colab notebook. Then paste any YouTube URL above to preview — this UI shows the controls. The actual download runs in Colab.
+  </div>
+</div>
+
+<script>
+  let selectedRes = null;
+  let selectedFormat = 'mp4';
+  let resOptions = [];
+  let isFetching = false;
+  let isDownloading = false;
+
+  const RESOLUTIONS = [144, 240, 360, 480, 720, 1080, 1440, 2160];
+
+  function selectFormat(fmt, el) {
+    selectedFormat = fmt;
+    document.querySelectorAll('.fmt-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function selectRes(res, el) {
+    selectedRes = res;
+    document.querySelectorAll('.res-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function setStatus(msg, type) {
+    const bar = document.getElementById('statusBar');
+    bar.textContent = msg;
+    bar.className = 'status-bar' + (type ? ' ' + type : '');
+  }
+
+  function setProgress(pct, label) {
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+    if (label) document.getElementById('progressStatus').textContent = label;
+  }
+
+  function extractVideoId(url) {
+    const m = url.match(/(?:v=|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function handleFetch() {
+    if (isFetching) return;
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) { setStatus('Paste a YouTube URL first', 'error'); return; }
+
+    const vid = extractVideoId(url);
+
+    isFetching = true;
+    document.getElementById('fetchBtn').disabled = true;
+    document.getElementById('fetchSpinner').classList.add('spinning');
+    document.getElementById('fetchBtnText').textContent = 'Fetching';
+    setStatus('');
+    document.getElementById('hintBox').style.display = 'none';
+
+    setTimeout(() => {
+      if (vid) {
+        const img = document.getElementById('thumbImg');
+        img.src = `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
+        img.style.display = 'block';
+        document.getElementById('thumbPlaceholder').style.display = 'none';
+      }
+
+      document.getElementById('videoTitle').textContent = url.length > 50 ? url.slice(0, 50) + '…' : url;
+      document.getElementById('videoDuration').textContent = 'duration varies';
+      document.getElementById('videoChannel').textContent = 'YouTube';
+      document.getElementById('videoMeta').classList.add('visible');
+
+      const pills = document.getElementById('resPills');
+      pills.innerHTML = '';
+      resOptions = RESOLUTIONS;
+      resOptions.forEach((r, i) => {
+        const pill = document.createElement('div');
+        pill.className = 'res-pill' + (i === 4 ? ' active' : '');
+        pill.textContent = r + 'p';
+        pill.onclick = () => selectRes(r, pill);
+        pills.appendChild(pill);
+      });
+      selectedRes = 720;
+
+      document.getElementById('resSection').style.display = 'block';
+      document.getElementById('fetchSpinner').classList.remove('spinning');
+      document.getElementById('fetchBtnText').textContent = 'Refetch';
+      document.getElementById('fetchBtn').disabled = false;
+      isFetching = false;
+      setStatus('Select resolution and click Download', '');
+    }, 1200);
+  }
+
+  function handleDownload() {
+    if (isDownloading || !selectedRes) return;
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) return;
+
+    isDownloading = true;
+    document.getElementById('downloadBtn').disabled = true;
+    document.getElementById('dlSpinner').classList.add('spinning');
+    document.getElementById('dlBtnText').textContent = 'Downloading…';
+    document.getElementById('progressSection').classList.add('visible');
+
+    let pct = 0;
+    setProgress(0, 'Starting download...');
+
+    const interval = setInterval(() => {
+      pct += Math.random() * 8 + 2;
+      if (pct >= 95) { pct = 95; clearInterval(interval); }
+      const label = pct < 30 ? 'Fetching video stream...' : pct < 60 ? 'Downloading audio stream...' : pct < 90 ? 'Merging streams...' : 'Finalizing...';
+      setProgress(pct, label);
+    }, 400);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      setProgress(100, 'Complete');
+      document.getElementById('dlSpinner').classList.remove('spinning');
+      document.getElementById('dlBtnText').textContent = 'Download Video';
+      document.getElementById('downloadBtn').disabled = false;
+      isDownloading = false;
+      setStatus('This is a UI preview — run the full script in Google Colab to download', '');
+    }, 5000);
+  }
+
+  document.getElementById('urlInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleFetch();
+  });
+</script>
